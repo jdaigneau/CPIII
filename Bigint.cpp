@@ -1,3 +1,66 @@
+#include "Bigint.h"
+
+bool isNum(char c);
+
+BigInt::BigInt()
+{
+	data = '0';
+	isNegative = false;
+}
+
+BigInt::BigInt(int x)
+{
+	data = to_string(x);
+
+	if (x < 0)
+		isNegative = true;
+
+	else isNegative = false;
+}
+
+BigInt::BigInt(string x)
+{
+	data = "";
+	bool invalid = false;
+
+	int start = x.find_first_not_of(" ");
+
+	if (x[start] == '-')
+	{
+		//x[start] = x[start + 1];
+		isNegative = true;
+	}
+
+	else if (x[start] == '+' || isNum(x[start]))
+		isNegative = false;
+
+	else invalid = true;
+
+	if (!isNum(x[start + 1]))
+		invalid = true;
+
+	for (int i = start + 1; i < x.length(); i++)
+	{
+		if (isNum(x[i]))
+		{
+			data += x[i];
+			continue;
+		}
+
+		if (x[i] != ' ')
+			invalid = true;
+
+		break;
+	}
+
+	if (invalid)
+	{
+		cout << "Value " << x << " is invalid" << endl;
+		exit(1);
+	}
+}
+
+ostream& operator<<(ostream& out, const BigInt& right)
 {
 	if (right.isNegative) out << '-';
 	out << right.data;
@@ -11,11 +74,14 @@ BigInt operator+(const BigInt& left, const BigInt& right)
 	int length2 = right.data.length() - 1;
 	int over = 0;
 	char temp;
-	string newData;
-	BigInt newBig;
-
-	int size = newBig.data.size();
-	newBig.data.resize(size + (length1 + 1), 0);
+	BigInt newLeft, newRight, answer;
+	int size = newLeft.data.size();
+	newLeft.data.resize(size + (length1 + 1), 0);
+	newRight.data.resize(size + (length1 + 1), 0);
+	answer.data.resize(size + (length1 + 1), 0);
+	
+	newLeft.data = left.data;
+	newRight.data = right.data;
 	
 	if ((!left.isNegative && !right.isNegative) || left.isNegative && right.isNegative)
 	{
@@ -24,13 +90,13 @@ BigInt operator+(const BigInt& left, const BigInt& right)
 
 			for (int i = length1; i >= 0; i--)
 			{
-				temp = (left.data[i]) + (right.data[i]) + over;
+				temp = (newLeft.data[i]) + (newRight.data[i]) + over;
 
-				newBig.data[i] = temp - '0';
+				answer.data[i] = temp - '0';
 
-				if (newBig.data[i] > '9')
+				if (answer.data[i] > '9')
 				{
-					newBig.data[i] -= 10;
+					answer.data[i] -= 10;
 					over = 1;
 				}
 
@@ -39,26 +105,42 @@ BigInt operator+(const BigInt& left, const BigInt& right)
 
 		}
 	}
-	if (left.isNegative && right < left )
+	if (right.isNegative)
 	{
+		cout << "Wat." << endl;
 		//int carry;
-		if (length1 == length2)
+		if (length1 < length2)
 		{
-			for (int i = length1; i >= 0; i--)
+			for (int i = length1 + 1; i >= 0; i--)
 			{
-				//if (left.data[i] < right.data[i])
-				//{
-				//	left.data[i] += 1;
-					//right.data[i - 1] -= 1;
-			//	}
-
+				if (newLeft.data[i] < newRight.data[i])
+				{
+					newLeft.data[i] += 1;
+					newRight.data[i - 1] -= 1;
+				}
+				cout << newRight.data[i] << endl;
 				temp = left.data[i] - right.data[i];
-				cout << temp << endl;
-				newBig = temp - '0';
+				//cout << temp << endl;
+				answer.data = temp -'0';
 			}
 		}
 	}
-	return newBig;
+	return answer;
+}
+
+BigInt operator-(const BigInt& left, const BigInt& right)
+{
+	int	length1 = left.data.length() - 1;
+	int length2 = right.data.length() - 1;
+
+	BigInt newLeft, newRight, answer;
+	int size = newLeft.data.size();
+	newLeft.data.resize(size + (length1 + 1), 0);
+	newRight.data.resize(size + (length2 + 1), 0);
+	answer.data.resize(size + (length1 + 1), 0);
+
+	newLeft.data = left.data;
+	newRight.data = right.data;
 }
 bool operator<(const BigInt& left, const BigInt& right)
 {
