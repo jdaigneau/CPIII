@@ -21,6 +21,8 @@ public:
 
 private:
 
+	BigInt addHelper(BigInt& left, BigInt& right);
+
 	string data;
 	bool isNegative;
 };
