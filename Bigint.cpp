@@ -216,6 +216,41 @@ bool operator<(const BigInt& left, const BigInt& right)
 	
 }
 
+BigInt BigInt::addHelper(BigInt& left, BigInt& right)
+{
+	int digit1, digit2, over = 0, i = 0;
+	BigInt answer;
+	answer.data = "";
+
+	while ((i < left.data.length()) && (i < right.data.length()))
+	{
+		digit1 = left.data[i];
+		digit2 = right.data[i];
+
+		answer.data.push_back(((digit1 + digit2 + over)%10) - '0');
+		over = (digit1 + digit2) / 10;
+		i++;
+	}
+
+	while (i < left.data.length())
+	{
+		digit1 = left.data[i];
+
+		answer.data.push_back(((digit1) % 10) - '0');
+		i++;
+	}
+
+	while (i > right.data.length())
+	{
+		digit1 = right.data[i];
+
+		answer.data.push_back(((digit1)%10) - '0');
+		i++;
+	}
+
+	return answer;
+}
+
 bool isNum(char c)
 {
 	return (c >= '0' && c <= '9');
