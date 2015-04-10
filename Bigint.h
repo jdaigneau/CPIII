@@ -21,6 +21,9 @@ public:
 
 private:
 
+	BigInt addHelper(BigInt& left, BigInt& right);
+	BigInt subHelper(BigInt& left, BigInt& right);
+	friend bool magnitude(const BigInt& left, const BigInt& right);
 	string data;
 	bool isNegative;
 };
