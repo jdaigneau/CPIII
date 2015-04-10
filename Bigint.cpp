@@ -4,18 +4,20 @@ bool isNum(char c);
 
 BigInt::BigInt()
 {
-	data = '0';
+	data = "0";
 	isNegative = false;
 }
 
 BigInt::BigInt(int x)
 {
-	data = to_string(x);
-
 	if (x < 0)
 		isNegative = true;
 
 	else isNegative = false;
+
+	data = to_string(abs(x));
+	if (isNegative)
+		cout << "I'm negative!" << endl;
 }
 
 BigInt::BigInt(string x)
@@ -27,19 +29,20 @@ BigInt::BigInt(string x)
 
 	if (x[start] == '-')
 	{
-		//x[start] = x[start + 1];
+		start++ ;
 		isNegative = true;
 	}
 
-	else if (x[start] == '+' || isNum(x[start]))
-		isNegative = false;
+	else if (x[start] == '+')
+		//|| isNum(x[start]))
+		start++;
 
 	else invalid = true;
 
 	if (!isNum(x[start + 1]))
 		invalid = true;
 
-	for (int i = start + 1; i < x.length(); i++)
+	for (int i = start; i < x.length(); i++)
 	{
 		if (isNum(x[i]))
 		{
@@ -58,6 +61,7 @@ BigInt::BigInt(string x)
 		cout << "Value " << x << " is invalid" << endl;
 		exit(1);
 	}
+	cout << x[start] << endl;
 }
 
 ostream& operator<<(ostream& out, const BigInt& right)
@@ -70,77 +74,34 @@ ostream& operator<<(ostream& out, const BigInt& right)
 
 BigInt operator+(const BigInt& left, const BigInt& right)
 {
-	int	length1 = left.data.length() - 1;
-	int length2 = right.data.length() - 1;
-	int over = 0;
-	char temp;
 	BigInt newLeft, newRight, answer;
-	int size = newLeft.data.size();
-	newLeft.data.resize(size + (length1 + 1), 0);
-	newRight.data.resize(size + (length1 + 1), 0);
-	answer.data.resize(size + (length1 + 1), 0);
 	
 	newLeft.data = left.data;
 	newRight.data = right.data;
 	
-	if ((!left.isNegative && !right.isNegative) || left.isNegative && right.isNegative)
+	if (left.isNegative == right.isNegative)
 	{
-		if (length1 == length2)
-		{
-
-			for (int i = length1; i >= 0; i--)
-			{
-				temp = (newLeft.data[i]) + (newRight.data[i]) + over;
-
-				answer.data[i] = temp - '0';
-
-				if (answer.data[i] > '9')
-				{
-					answer.data[i] -= 10;
-					over = 1;
-				}
-
-				else over = 0;
-			}
-
-		}
+		answer = newLeft.addHelper(newLeft, newRight);
+		answer.isNegative = left.isNegative;
 	}
-	if (right.isNegative)
-	{
-		cout << "Wat." << endl;
-		//int carry;
-		if (length1 < length2)
-		{
-			for (int i = length1 + 1; i >= 0; i--)
-			{
-				if (newLeft.data[i] < newRight.data[i])
-				{
-					newLeft.data[i] += 1;
-					newRight.data[i - 1] -= 1;
-				}
-				cout << newRight.data[i] << endl;
-				temp = left.data[i] - right.data[i];
-				//cout << temp << endl;
-				answer.data = temp -'0';
-			}
-		}
-	}
+
+	else if (magnitude(newLeft, newRight))
+		answer = newLeft.subHelper(newLeft, newRight);
+		
 	return answer;
 }
 
 BigInt operator-(const BigInt& left, const BigInt& right)
 {
-	int	length1 = left.data.length() - 1;
-	int length2 = right.data.length() - 1;
-
 	BigInt newLeft, newRight, answer;
-	int size = newLeft.data.size();
-	newLeft.data.resize(size + (length1 + 1), 0);
-	newRight.data.resize(size + (length2 + 1), 0);
-	answer.data.resize(size + (length1 + 1), 0);
-
+	
 	newLeft.data = left.data;
 	newRight.data = right.data;
+
+	if (left.isNegative == right.isNegative)
+		answer = newLeft.subHelper(newLeft, newRight);
+
+	return answer;
 }
 bool operator<(const BigInt& left, const BigInt& right)
 {
@@ -160,7 +121,7 @@ bool operator<(const BigInt& left, const BigInt& right)
 	if (left.isNegative && !right.isNegative)
 		return true;
 
-	if (!left.isNegative && !right.isNegative)
+	if (left.isNegative == right.isNegative)
 	{
 		if (length1 < length2)
 			return true;
@@ -186,34 +147,6 @@ bool operator<(const BigInt& left, const BigInt& right)
 		
 	}
 
-	if (left.isNegative && right.isNegative)
-	{
-		
-		if (length1 < length2)
-			return false;
-
-		if (length2 < length1)
-			return true;
-
-		if (length1 == length2)
-		{	
-			
-			for (int i = 0; i < length1; i++)
-			{
-				if (!isNum(left.data[i]) || !isNum(right.data[i]))
-					continue;
-
-				if (left.data[i] != right.data[i])
-				{
-					y = i;
-					break;
-				}
-			}
-			
-		}
-		return left.data[y] > right.data[y];
-	}
-	
 }
 
 BigInt BigInt::addHelper(BigInt& left, BigInt& right)
@@ -221,36 +154,108 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 	int digit1, digit2, over = 0, i = 0;
 	BigInt answer;
 	answer.data = "";
-
+	
 	while ((i < left.data.length()) && (i < right.data.length()))
 	{
-		digit1 = left.data[i];
-		digit2 = right.data[i];
+		digit1 = left.data[left.data.length() - i - 1] - '0';
+		digit2 = right.data[right.data.length() - i - 1] -'0';
 
-		answer.data.push_back(((digit1 + digit2 + over)%10) - '0');
+		answer.data.push_back(((digit1 + digit2 + over)%10) + '0');
+		
 		over = (digit1 + digit2) / 10;
+		cout << answer.data[i]  << endl;
+		cout << "Over is " << over << endl;
 		i++;
 	}
-
+	
 	while (i < left.data.length())
 	{
-		digit1 = left.data[i];
+		digit1 = left.data[left.data.length() - i - 1] - '0';
 
-		answer.data.push_back(((digit1) % 10) - '0');
+		answer.data.push_back(digit1 + over + '0');
+		over = 0;
 		i++;
 	}
-
-	while (i > right.data.length())
+	
+	while (i < right.data.length())
 	{
-		digit1 = right.data[i];
+		digit1 = right.data[right.data.length() - i - 1] - '0';
 
-		answer.data.push_back(((digit1)%10) - '0');
+		answer.data.push_back(digit1 + over + '0');
+		over = 0;
 		i++;
 	}
 
 	return answer;
 }
 
+BigInt BigInt::subHelper(BigInt& left, BigInt& right)
+{
+	int digit1, digit2, over = 0, i = 0;
+	BigInt answer;
+	answer.data = "";
+
+	while ((i < left.data.length()) && (i < right.data.length()))
+	{
+		digit1 = left.data[left.data.length() - i - 1] - '0';
+		digit2 = right.data[right.data.length() - i - 1] - '0';
+
+		if (digit1 - digit2 + over < 0)
+		{
+			answer.data.push_back(digit1 - digit2 + over + 10);
+			over = -1;
+
+		}
+
+		else
+		{
+			answer.data.push_back(digit1 - digit2 + over);
+			over = 0;
+		}
+		i++;
+	}
+
+	while (i < left.data.length())
+	{
+		digit1 = left.data[left.data.length() - i - 1] - '0';
+
+		answer.data.push_back(digit1 + over + '0');
+		over = 0;
+		i++;
+	}
+
+	while (i < right.data.length())
+	{
+		digit1 = right.data[right.data.length() - i - 1] - '0';
+
+		answer.data.push_back(digit1 + over + '0');
+		over = 0;
+		i++;
+	}
+
+	return answer;
+}
+
+bool magnitude(const BigInt& left, const BigInt& right)
+{
+	if (left.data.length() == right.data.length())
+	{
+		for (int i = 0; i < left.data.length(); i++)
+		{
+			if (left.data[i] != right.data[i])
+				return left.data[i] > right.data[i];
+
+			else i++;
+
+		}
+	}
+
+	else if (left.data.length() > right.data.length())
+		return true;
+
+	else
+		return false;
+}
 bool isNum(char c)
 {
 	return (c >= '0' && c <= '9');
