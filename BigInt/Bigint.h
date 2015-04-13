@@ -1,3 +1,10 @@
+/* 
+ * File:   Bigint.h
+ * Author: jeremydaigneau
+ *
+ * Created on April 10, 2015, 7:54 PM
+ */
+
 #ifndef BIGINT_H
 #define BIGINT_H
 
@@ -29,3 +36,5 @@ private:
 };
 
 #endif
+
+

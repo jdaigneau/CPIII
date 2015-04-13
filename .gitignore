@@ -1,0 +1,4 @@
+/BigInt/build/
+/BigInt/dist/
+
+*.DS_Store
