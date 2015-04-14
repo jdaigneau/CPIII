@@ -23,16 +23,19 @@ public:
 	friend BigInt operator+(const BigInt& left, const BigInt& right);
 	friend BigInt operator-(const BigInt& left, const BigInt& right);
 	friend bool operator<(const BigInt& left, const BigInt& right);
-								
-	friend ostream& operator<<(ostream& out, const BigInt& right);
-
+	friend bool operator>(const BigInt& left, const BigInt& right);			
+	friend bool operator==(const BigInt& left, const BigInt& right);
+        friend ostream& operator<<(ostream& out, const BigInt& right);
+        
 private:
 
 	BigInt addHelper(BigInt& left, BigInt& right);
 	BigInt subHelper(BigInt& left, BigInt& right);
-	friend bool magnitude(const BigInt& left, const BigInt& right);
-	string data;
+	bool magnitude(BigInt& left, BigInt& right)const;
+	
+        string data;
 	bool isNegative;
+        void stringFlip();
 };
 
 #endif

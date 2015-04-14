@@ -11,13 +11,12 @@ BigInt::BigInt()
 BigInt::BigInt(int x)
 {
 	if (x < 0)
-		isNegative = true;
+            isNegative = true;
 
 	else isNegative = false;
 
 	data = to_string(abs(x));
-	if (isNegative)
-		cout << "I'm negative!" << endl;
+	
 }
 
 BigInt::BigInt(string x)
@@ -34,14 +33,20 @@ BigInt::BigInt(string x)
 	}
 
 	else if (x[start] == '+')
-		//|| isNum(x[start]))
-		start++;
+            start++;
 
+        else if (isNum(x[start]))
+            isNegative = false;
+        
 	else invalid = true;
-
-	if (!isNum(x[start + 1]))
-		invalid = true;
-
+        
+        if(x.length() - 1 > 1)
+        {
+            if (!isNum(x[start + 1]))
+                invalid = true;
+            
+        }
+        
 	for (int i = start; i < x.length(); i++)
 	{
 		if (isNum(x[i]))
@@ -61,7 +66,7 @@ BigInt::BigInt(string x)
 		cout << "Value " << x << " is invalid" << endl;
 		exit(1);
 	}
-	cout << x[start] << endl;
+	
 }
 
 ostream& operator<<(ostream& out, const BigInt& right)
@@ -75,19 +80,43 @@ ostream& operator<<(ostream& out, const BigInt& right)
 BigInt operator+(const BigInt& left, const BigInt& right)
 {
 	BigInt newLeft, newRight, answer;
-	
+        
 	newLeft.data = left.data;
 	newRight.data = right.data;
-	
+        
 	if (left.isNegative == right.isNegative)
 	{
 		answer = newLeft.addHelper(newLeft, newRight);
 		answer.isNegative = left.isNegative;
 	}
 
-	else if (magnitude(newLeft, newRight))
-		answer = newLeft.subHelper(newLeft, newRight);
+	else if (right.isNegative)
+        {
+            if(left.magnitude(newLeft, newRight))
+            {
+                answer = newLeft.subHelper(newLeft, newRight);
+                answer.isNegative = false;
+            }
+            else 
+            {
+                answer = newLeft.subHelper(newRight, newLeft);
+                answer.isNegative = true;
+            }    
+        }
 		
+        else
+        {
+            if(left.magnitude(newRight, newLeft))
+            {
+                answer = newLeft.subHelper(newRight, newLeft);
+                answer.isNegative = false;
+            }
+            else 
+            {
+                answer = newLeft.subHelper(newLeft, newRight);
+                answer.isNegative = true;
+            }
+        }
 	return answer;
 }
 
@@ -98,57 +127,136 @@ BigInt operator-(const BigInt& left, const BigInt& right)
 	newLeft.data = left.data;
 	newRight.data = right.data;
 
-	if (left.isNegative == right.isNegative)
+	if (!left.isNegative && !right.isNegative)
+        {   
+            if(left.magnitude(newLeft, newRight))
+            {   
 		answer = newLeft.subHelper(newLeft, newRight);
-
+                answer.isNegative = false;
+            }
+            else 
+            {
+                answer = newLeft.subHelper(newRight, newLeft);
+                answer.isNegative = true;
+            }    
+        } 
+        
+        else if( left.isNegative && right.isNegative)
+        {   
+            answer = newLeft.addHelper(newLeft, newRight);
+            answer.isNegative = true;
+        }
+        
+        else if( left.isNegative && !right.isNegative)
+        {
+            if(left.magnitude(newLeft, newRight))
+            {
+                answer = newLeft.addHelper(newLeft, newRight);
+                answer.isNegative = true;
+            }
+            
+            else
+            { 
+                answer = newLeft.subHelper(newLeft, newRight);
+                answer.isNegative = false;
+            }
+        }
+        else
+        {
+            if(left.magnitude(newRight,newLeft))
+            {
+                answer = newLeft.addHelper(newRight, newLeft);
+                answer.isNegative = false;
+            }
+            
+            else
+            {cout << "dont go here8" << endl;
+                answer = newLeft.addHelper(newLeft, newRight);
+                answer.isNegative = false;
+            }
+        }
 	return answer;
 }
 bool operator<(const BigInt& left, const BigInt& right)
 {
-	int	length1 = left.data.length();
-	int length2 = right.data.length();
-	int y = 0;
-
-	if (!isNum(right.data[0]))
-		length2 -= 1;
-
-	if (!isNum(left.data[0]))
-		length1 -= 1;
-
+        BigInt newLeft, newRight;
+        
+        newLeft.data = left.data;
+        newRight.data = right.data;
+        
 	if (right.isNegative && !left.isNegative)
 		return false;
 
 	if (left.isNegative && !right.isNegative)
 		return true;
 
-	if (left.isNegative == right.isNegative)
+	if (!left.isNegative && !right.isNegative)
 	{
-		if (length1 < length2)
-			return true;
-
-		if (length2 < length1)
-			return false;
-
-		if (length1 == length2)
-		{
-			for (int i = 0; i < length1; i++)
-			{
-				if (!isNum(left.data[i]) || !isNum(right.data[i]))
-					continue;
-				 
-				if (left.data[i] != right.data[i])
-				{
-					y = i;
-					break;
-				}
-			}
-			return left.data[y] < right.data[y];
-		}
-		
-	}
-
+            if (newLeft.magnitude(newLeft, newRight))     
+                return false;
+              
+            else return true;
+        }
+        
+        if (left.isNegative && right.isNegative)
+        {
+            if (newLeft.magnitude(newLeft, newRight))
+                return true;
+            
+            else return false;
+        }
+        return false;
 }
 
+bool operator>(const BigInt& left, const BigInt& right)
+{
+    BigInt newLeft, newRight;
+    
+    newLeft.data = left.data;
+    newRight.data = right.data;
+    
+    if(!left.isNegative && !right.isNegative)
+    {
+        if(left.magnitude(newLeft, newRight))
+            return true;
+        
+        return false;
+    }
+    
+    if(left.isNegative && right.isNegative)
+    {
+        if(left.magnitude(newLeft, newRight))
+            return false;
+   
+        return true;
+    }
+    
+    if( left.isNegative && !right.isNegative)
+        return false;
+        
+    else return true;
+}
+
+bool operator==(const BigInt& left, const BigInt& right)
+{
+    BigInt newLeft, newRight;
+    
+    newLeft.data = left.data;
+    newRight.data = right.data;
+    
+    if ((left.data.length() != right.data.length()) || (left.isNegative != right.isNegative))
+            return false;
+    
+    else
+    {
+        for (int i = 0; i < left.data.length(); i++)
+        {
+            if (newLeft.data[i] != newRight.data[i])
+                return false;
+        }
+        return true;
+    }
+}
 BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 {
 	int digit1, digit2, over = 0, i = 0;
@@ -163,8 +271,7 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 		answer.data.push_back(((digit1 + digit2 + over)%10) + '0');
 		
 		over = (digit1 + digit2) / 10;
-		cout << answer.data[i]  << endl;
-		cout << "Over is " << over << endl;
+		
 		i++;
 	}
 	
@@ -172,8 +279,8 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 	{
 		digit1 = left.data[left.data.length() - i - 1] - '0';
 
-		answer.data.push_back(digit1 + over + '0');
-		over = 0;
+		answer.data.push_back(((digit1 + over)%10) + '0');
+		over = (digit1 + over)/10;
 		i++;
 	}
 	
@@ -181,11 +288,15 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 	{
 		digit1 = right.data[right.data.length() - i - 1] - '0';
 
-		answer.data.push_back(digit1 + over + '0');
-		over = 0;
+		answer.data.push_back(((digit1 + over)%10) + '0');
+		over = (digit1 + over)/10;
 		i++;
 	}
-
+        
+        if( over != 0)
+            answer.data.push_back(over + '0');
+        
+        answer.stringFlip();
 	return answer;
 }
 
@@ -199,18 +310,18 @@ BigInt BigInt::subHelper(BigInt& left, BigInt& right)
 	{
 		digit1 = left.data[left.data.length() - i - 1] - '0';
 		digit2 = right.data[right.data.length() - i - 1] - '0';
-
+                
 		if (digit1 - digit2 + over < 0)
 		{
-			answer.data.push_back(digit1 - digit2 + over + 10);
-			over = -1;
+                    answer.data.push_back(digit1 - digit2 + over + 10 + '0');
+                    over = -1;
 
 		}
 
 		else
 		{
-			answer.data.push_back(digit1 - digit2 + over);
-			over = 0;
+			answer.data.push_back(digit1 - digit2 + over + '0');
+                        over = 0;
 		}
 		i++;
 	}
@@ -218,8 +329,9 @@ BigInt BigInt::subHelper(BigInt& left, BigInt& right)
 	while (i < left.data.length())
 	{
 		digit1 = left.data[left.data.length() - i - 1] - '0';
-
-		answer.data.push_back(digit1 + over + '0');
+              
+		answer.data.push_back((((digit1 + over) + 10)%10) + '0');
+               
 		over = 0;
 		i++;
 	}
@@ -227,27 +339,35 @@ BigInt BigInt::subHelper(BigInt& left, BigInt& right)
 	while (i < right.data.length())
 	{
 		digit1 = right.data[right.data.length() - i - 1] - '0';
-
-		answer.data.push_back(digit1 + over + '0');
+               
+		answer.data.push_back((((digit1 + over) + 10)%10) + '0');
+                
 		over = 0;
 		i++;
 	}
-
+        
+        
+        answer.stringFlip();
 	return answer;
 }
 
-bool magnitude(const BigInt& left, const BigInt& right)
+bool BigInt::magnitude(BigInt& left, BigInt& right) const
 {
 	if (left.data.length() == right.data.length())
-	{
+	{   
 		for (int i = 0; i < left.data.length(); i++)
-		{
+		{       
 			if (left.data[i] != right.data[i])
-				return left.data[i] > right.data[i];
-
-			else i++;
+                        {
+                            if (left.data[i] > right.data[i])
+                                return true;
+                            
+                            else return false;
+                            
+                        }   
 
 		}
+                return false;
 	}
 
 	else if (left.data.length() > right.data.length())
@@ -255,6 +375,19 @@ bool magnitude(const BigInt& left, const BigInt& right)
 
 	else
 		return false;
+        
+        return false;
+}
+
+void BigInt:: stringFlip()
+{
+    string temp;
+    temp.resize(data.length(), '0');
+    
+    for( int i = 0; i < data.length(); i++)
+        temp[i] = data[data.length() - i  - 1];
+    
+    data = temp;
 }
 bool isNum(char c)
 {

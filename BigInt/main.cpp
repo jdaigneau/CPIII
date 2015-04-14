@@ -28,14 +28,16 @@ cout << "Expecting 1, got: " << (BigInt("-30") < BigInt("-1")) << endl;
 cout << "Expecting 0, got: " << (BigInt("30") < BigInt("-1")) << endl;
 cout << "Expecting 1, got: " << (BigInt("30") < BigInt("300")) << endl;
 cout << "Expecting 0, got: " << (BigInt("-30") < BigInt("-300")) << endl;
-
-     * 
-     * 
-     */
-    BigInt a("1");
-    BigInt b("99");
     
-    cout << a + b << endl;
+   */
+    BigInt a(1111);
+    BigInt b(-1111);
+    
+    if( a == b)
+        cout << "They do equal" << endl;
+    
+    else
+        cout << "They don't equal" << endl;
     return 0;
 }
 
