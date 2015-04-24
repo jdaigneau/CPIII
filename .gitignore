@@ -2,3 +2,5 @@
 /BigInt/dist/
 
 *.DS_Store
+/ants/build/
+/ants/dist/

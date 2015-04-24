@@ -22,7 +22,9 @@ public:
 
 	friend BigInt operator+(const BigInt& left, const BigInt& right);
 	friend BigInt operator-(const BigInt& left, const BigInt& right);
-	friend bool operator<(const BigInt& left, const BigInt& right);
+	friend BigInt operator*(const BigInt& left, const BigInt& right);
+        friend BigInt operator/(const BigInt& left, const BigInt& right);
+        friend bool operator<(const BigInt& left, const BigInt& right);
 	friend bool operator>(const BigInt& left, const BigInt& right);			
 	friend bool operator==(const BigInt& left, const BigInt& right);
         friend ostream& operator<<(ostream& out, const BigInt& right);

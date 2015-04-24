@@ -71,9 +71,23 @@ BigInt::BigInt(string x)
 
 ostream& operator<<(ostream& out, const BigInt& right)
 {
-	if (right.isNegative) out << '-';
-	out << right.data;
-
+    int start = 0;
+     BigInt temp;
+     temp.data = right.data;
+     
+     for (int i = 0; i < temp.data.length(); i++)
+     {
+         if (temp.data[i] == '0')
+             start++;
+         
+         else break;
+     }
+     
+    if (right.isNegative) out << '-';
+	
+     for (int i = start; i < temp.data.length(); i++)
+         out << temp.data[i];
+    
 	return out;
 }
 
@@ -143,9 +157,18 @@ BigInt operator-(const BigInt& left, const BigInt& right)
         
         else if( left.isNegative && right.isNegative)
         {   
-            answer = newLeft.addHelper(newLeft, newRight);
-            answer.isNegative = true;
-        }
+            if(left.magnitude(newLeft, newRight))
+            {  
+                answer = newLeft.subHelper(newLeft, newRight);
+                answer.isNegative = true;
+            }
+            
+            else
+            {
+                answer = newLeft.subHelper(newRight, newRight);
+                answer.isNegative = false;
+            }
+        }   
         
         else if( left.isNegative && !right.isNegative)
         {
@@ -170,12 +193,98 @@ BigInt operator-(const BigInt& left, const BigInt& right)
             }
             
             else
-            {cout << "dont go here8" << endl;
+            {
                 answer = newLeft.addHelper(newLeft, newRight);
                 answer.isNegative = false;
             }
         }
 	return answer;
+}
+BigInt operator*(const BigInt& left, const BigInt& right)
+{
+    BigInt newLeft, newRight, temp, temp2, answer;
+    temp2.data = "";
+    int digit1, digit2, over, count = 0; 
+    
+    newLeft.data = left.data;
+    newRight.data = right.data;
+    
+    if(left.isNegative == right.isNegative)
+        answer.isNegative = false;
+    
+    else answer.isNegative = true;
+    
+    for (int i = left.data.length() - 1; i >= 0; i--)
+    {  
+        over = 0;
+        temp.data = "";
+        digit1 = newLeft.data[i] - '0';
+        
+        for ( int j = right.data.length() - 1; j >= 0; j--)
+        {
+            digit2 = newRight.data[j] - '0';
+            temp.data.push_back(((digit1 * digit2 + over)%10) + '0');
+            over = (digit1 * digit2 + over)/10;
+           
+        }
+       
+        if( over != 0)
+            temp.data.push_back(over + '0');
+        
+        temp.stringFlip();
+        
+        for (int k = count; k > 0; k--)
+        {   
+            temp.data.push_back('0');
+        }
+        
+        temp2 = temp + temp2;
+        
+        count++;
+    }
+ 
+    answer.data = temp2.data;
+    return answer;
+}
+
+BigInt operator/(const BigInt& left, const BigInt& right)
+{
+    BigInt dividend, divisor, answer, temp;
+    int j = 0;
+    
+    temp.data = "";
+    dividend.data = left.data;
+    divisor.data = right.data;
+    
+    if( divisor > dividend)
+    {
+        answer.data.push_back('0');
+        return answer;
+    }
+    if(left.isNegative == right.isNegative)
+        answer.isNegative = false;
+    
+    else answer.isNegative = true;
+    
+    for ( int i = divisor.data.length() - 1; i >= 0; i--)
+        temp.data.push_back(dividend.data[i]);
+    
+   // cout << "Temp is " << temp << endl;
+    for (int i = dividend.data.length() - divisor.data.length(); i < dividend.data.length(); i++ )
+    {
+        while ((temp > divisor) || (temp == divisor))
+        {
+            cout << "Temp is " << temp << endl;
+            cout << "divisor is " << divisor << endl;
+            temp = temp - divisor;
+            j++;
+        }
+        cout << "J is " << j << endl;
+        answer.data.push_back(j + '0');
+        temp.data.push_back(dividend.data[i + divisor.data.length()]);
+        //cout << "Temp is " << temp << endl;
+    }
+    return answer;
 }
 bool operator<(const BigInt& left, const BigInt& right)
 {
@@ -269,8 +378,8 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 		digit2 = right.data[right.data.length() - i - 1] -'0';
 
 		answer.data.push_back(((digit1 + digit2 + over)%10) + '0');
-		
-		over = (digit1 + digit2) / 10;
+                
+		over = (digit1 + digit2 + over) / 10;
 		
 		i++;
 	}
@@ -281,7 +390,8 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 
 		answer.data.push_back(((digit1 + over)%10) + '0');
 		over = (digit1 + over)/10;
-		i++;
+                
+                i++;
 	}
 	
 	while (i < right.data.length())
@@ -292,7 +402,7 @@ BigInt BigInt::addHelper(BigInt& left, BigInt& right)
 		over = (digit1 + over)/10;
 		i++;
 	}
-        
+       
         if( over != 0)
             answer.data.push_back(over + '0');
         
