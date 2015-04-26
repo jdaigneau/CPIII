@@ -57,7 +57,8 @@ public:
 	virtual void breed() = 0;	
 	virtual void move() = 0;	
 	virtual int getType() =0;	
-	virtual bool starve() = 0;	
+	virtual bool starve() = 0;
+	
 protected:
 	int x,y;			
 	bool moved;			
@@ -71,10 +72,10 @@ class Ant : public Organism
  public:
 	Ant();
 	Ant(World *world, int x, int y);
-	void breed();	// Must define this since virtual
-	void move();	// Must define this since virtual
-	int getType();	// Must define this since virtual
-	bool starve()   // Return false, ant never starves
+	virtual void breed();	
+	virtual void move();	
+	virtual int getType();	
+	virtual bool starve()   
 	  { return false; }
 };
 
@@ -84,12 +85,13 @@ class Doodlebug : public Organism
  public:
 	Doodlebug();
 	Doodlebug(World *world, int x, int y);
-	void breed();	// Must define this since virtual
-	void move();	// Must define this since virtual
-	int getType();	// Must define this since virtual
-	bool starve();	// Check if a doodlebug starves to death
+	virtual void breed();	
+	virtual void move();	
+	virtual int getType();	
+	virtual bool starve();
+	
  private:
-	int starveTicks;	// Number of moves before starving
+	int starveTicks;	
 };
 
 #endif	/* ANTS_H */

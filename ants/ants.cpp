@@ -2,7 +2,6 @@
 
 World::World()
 {
-	// Initialize world to empty spaces
 	int i,j;
 	for (i=0; i<WORLDSIZE; i++)
 	{
@@ -15,7 +14,6 @@ World::World()
 
 World::~World()
 {
-	// Release any allocated memory
 	int i,j;
 	for (i=0; i<WORLDSIZE; i++)
 	{
@@ -26,10 +24,6 @@ World::~World()
 	}
 }
 
-// ======================
-// getAt
-// Returns the entry stored in the grid array at x,y
-// ======================
 Organism* World::getAt(int x, int y)
 {
 	if ((x>=0) && (x<WORLDSIZE) && (y>=0) && (y<WORLDSIZE))
@@ -45,10 +39,6 @@ void World::setAt(int x, int y, Organism *org)
 	}
 }
 
-// ======================
-// Display
-// Displays the world in ASCII.  Uses o for ant, X for doodlebug.
-// ======================
 void World::Display()
 {
 	int i,j;
@@ -67,26 +57,16 @@ void World::Display()
 	}
 }
 
-// ======================
-// SimulateOneStep
-// This is the main routine that simulates one turn in the world.
-// First, a flag for each organism is used to indicate if it has moved.
-// This is because we iterate through the grid starting from the top
-// looking for an organism to move . If one moves down, we don't want
-// to move it again when we reach it.
-// First move doodlebugs, then ants, and if they are still alive then
-// we breed them.
-// ======================
 void World::SimulateOneStep()
 {
 	int i,j;
-	// First reset all organisms to not moved
+	
 	for (i=0; i<WORLDSIZE; i++)
 		for (j=0; j<WORLDSIZE; j++)
 		{
 			if (grid[i][j]!=NULL) grid[i][j]->moved = false;
 		}
-	// Loop through cells in order and move if it's a Doodlebug
+	
 	for (i=0; i<WORLDSIZE; i++)
 		for (j=0; j<WORLDSIZE; j++)
 		{
@@ -99,7 +79,7 @@ void World::SimulateOneStep()
 			}
 		 }
 		}
-	// Loop through cells in order and move if it's an Ant
+	
 	for (i=0; i<WORLDSIZE; i++)
 		for (j=0; j<WORLDSIZE; j++)
 		{
@@ -112,7 +92,7 @@ void World::SimulateOneStep()
 				}
 			}
 		}
-	// Loop through cells in order and check if we should breed
+	
 	for (i=0; i<WORLDSIZE; i++)
 		for (j=0; j<WORLDSIZE; j++)
 		{
@@ -141,10 +121,6 @@ void World::SimulateOneStep()
 		}
 }
 
-// ======================
-// Organism Constructor
-// Sets a reference back to the World object.
-// ======================
 Organism::Organism()
 {
 	world = NULL;	
@@ -163,26 +139,11 @@ Organism::Organism(World *wrld, int x, int y)
 	wrld->setAt(x,y,this);
 }
 
-// ======================
-// Organism destructor
-// No need to delete the world reference,
-// it will be destroyed elsewhere.
-// ======================
 Organism::~Organism()
 {
 
 }
 
-// --------------------------------
-// ----- ENTER YOUR CODE HERE -----
-// --------------------------------
-
-// Start with the Ant class
-
-
-// ======================
-// Ant constructor
-// ======================
 Ant::Ant() : Organism()
 {
 }
@@ -191,11 +152,6 @@ Ant::Ant(World *world, int x, int y) : Organism(world,x,y)
 {
 }
 
-// ======================
-// Ant Move
-// Look for an empty cell up, right, left, or down and
-// try to move there.
-// ======================
 void Ant::move()
 {
 	// Pick random direction to move
@@ -242,22 +198,11 @@ void Ant::move()
 	}
 }
 
-// ======================
-// Ant getType
-// This virtual function is used so we can determine
-// what type of organism we are dealing with.
-// ======================
 int Ant::getType()
 {
 	return ANT;
 }
 
-// ======================
-// Ant breed
-// Increment the tick count for breeding.
-// If it equals our threshold, then clone this ant either
-// above, right, left, or below the current one.
-// ======================
 void Ant::breed()
 {
 	breedTicks++;
@@ -339,7 +284,6 @@ void Doodlebug::move()
 		return;
 	}
 
-	
 	// If we got here, then we didn't find food.  Move
 	// to a random spot if we can find one.
 	int dir = rand() % 4;
@@ -387,21 +331,11 @@ void Doodlebug::move()
 				// eat on this turn
 }
 
-// ======================
-// Doodlebug getType
-// This virtual function is used so we can determine
-// what type of organism we are dealing with.
-// ======================
 int Doodlebug::getType()
 {
 	return DOODLEBUG;
 }
 
-// ======================
-// Doodlebug breed
-// Creates a new doodlebug adjacent to the current cell
-// if the breedTicks meets the threshold.
-// ======================
 void Doodlebug::breed()
 {
 	breedTicks++;
@@ -428,11 +362,6 @@ void Doodlebug::breed()
 	}
 }
 
-// ======================
-// Doodlebug starve
-// Returns true or false if a doodlebug should die off
-// because it hasn't eaten enough food.
-// ======================
 bool Doodlebug::starve()
 {
 	// Starve if no food eaten in last DOODLESTARVE time ticks
@@ -446,7 +375,4 @@ bool Doodlebug::starve()
 	}
 }
 
-// --------------------------------
-// --------- END USER CODE --------
-// --------------------------------
 
