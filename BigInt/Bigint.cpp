@@ -165,7 +165,7 @@ BigInt operator-(const BigInt& left, const BigInt& right)
             
             else
             {
-                answer = newLeft.subHelper(newRight, newRight);
+                answer = newLeft.subHelper(newRight, newLeft);
                 answer.isNegative = false;
             }
         }   
