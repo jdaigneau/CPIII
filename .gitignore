@@ -4,3 +4,7 @@
 *.DS_Store
 /ants/build/
 /ants/dist/
+/waaah/build/
+/waaah/dist/
+/Tree/dist/
+/Tree/build/

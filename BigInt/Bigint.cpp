@@ -9,14 +9,14 @@ BigInt::BigInt()
 }
 
 BigInt::BigInt(int x)
-{
+{   cout << x << endl;
 	if (x < 0)
             isNegative = true;
 
 	else isNegative = false;
-
+        cout << x << endl;
 	data = to_string(abs(x));
-	
+	cout << data << endl;
 }
 
 BigInt::BigInt(string x)
@@ -60,7 +60,14 @@ BigInt::BigInt(string x)
 
 		break;
 	}
-
+        
+        for (int i = 0; i < data.length(); i++ )
+        {
+            if (data[data.length() - 1] == '0')
+            {
+                data.pop_back();
+            }
+        }
 	if (invalid)
 	{
 		cout << "Value " << x << " is invalid" << endl;
@@ -71,18 +78,20 @@ BigInt::BigInt(string x)
 
 ostream& operator<<(ostream& out, const BigInt& right)
 {
-    int start = 0;
+     int start = 0;
      BigInt temp;
      temp.data = right.data;
      
-     for (int i = 0; i < temp.data.length(); i++)
+     /*if(temp.data.length() > 1)
      {
-         if (temp.data[i] == '0')
-             start++;
+        for (int i = 0; i < temp.data.length(); i++)
+        {
+            if (temp.data[i] == '0')
+            start++;
          
-         else break;
-     }
-     
+            else break;
+        }
+     }*/
     if (right.isNegative) out << '-';
 	
      for (int i = start; i < temp.data.length(); i++)
@@ -249,43 +258,74 @@ BigInt operator*(const BigInt& left, const BigInt& right)
 
 BigInt operator/(const BigInt& left, const BigInt& right)
 {
-    BigInt dividend, divisor, answer, temp;
-    int j = 0;
+    BigInt inner, outer, answer, temp;
+    int j;
+    bool zero = false;
     
     temp.data = "";
-    dividend.data = left.data;
-    divisor.data = right.data;
+    answer.data = "";
+    inner.data = left.data;
+    outer.data = right.data;
     
-    if( divisor > dividend)
+    if(outer > inner)
     {
         answer.data.push_back('0');
         return answer;
     }
+    
     if(left.isNegative == right.isNegative)
         answer.isNegative = false;
     
     else answer.isNegative = true;
     
-    for ( int i = divisor.data.length() - 1; i >= 0; i--)
-        temp.data.push_back(dividend.data[i]);
+    for (int i = outer.data.length() - 1; i >= 0; i--)
+        temp.data.push_back(inner.data[i]);
     
-   // cout << "Temp is " << temp << endl;
-    for (int i = dividend.data.length() - divisor.data.length(); i < dividend.data.length(); i++ )
-    {
-        while ((temp > divisor) || (temp == divisor))
-        {
-            cout << "Temp is " << temp << endl;
-            cout << "divisor is " << divisor << endl;
-            temp = temp - divisor;
+    temp.stringFlip();
+    cout << "Temp is " << temp.data << endl;
+   
+    for (int i = outer.data.length(); i <= inner.data.length(); i++ )
+    {    
+        j = 0;
+        
+        while ((temp > outer))// || (temp == outer))
+        {   
+            cout << "Hello";
+            temp = temp - outer;
+            cout << "Temp is " << temp.data << endl;
             j++;
+            
+            
+            /*for (int k = temp.data.length() - 1; k >= 0; k--)
+            {
+                cout << "temp is " << temp.data <<endl;
+                if(temp.data[k] == '0')
+                {
+                    zero = true;
+                    cout << "the number is " << temp.data[k] << endl;
+                    cout << "Zero is " << zero << endl;
+                    cout << "temp is " << temp.data << endl;
+                }
+                else
+                {
+                    zero = false;
+                    break;
+                }
+                
+            }
+            
+            if(zero)
+                break;*/
         }
-        cout << "J is " << j << endl;
+       
         answer.data.push_back(j + '0');
-        temp.data.push_back(dividend.data[i + divisor.data.length()]);
-        //cout << "Temp is " << temp << endl;
-    }
+        temp.data.push_back(inner.data[i]);
+        cout << "new temp is " << temp.data << endl;
+    
     return answer;
+    }
 }
+
 bool operator<(const BigInt& left, const BigInt& right)
 {
         BigInt newLeft, newRight;
