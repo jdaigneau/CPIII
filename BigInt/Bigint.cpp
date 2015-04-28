@@ -9,19 +9,20 @@ BigInt::BigInt()
 }
 
 BigInt::BigInt(int x)
-{   cout << x << endl;
+{  
 	if (x < 0)
             isNegative = true;
 
 	else isNegative = false;
-        cout << x << endl;
+       
 	data = to_string(abs(x));
-	cout << data << endl;
+	
 }
 
 BigInt::BigInt(string x)
 {
 	data = "";
+        string temp = "";
 	bool invalid = false;
 
 	int start = x.find_first_not_of(" ");
@@ -61,6 +62,14 @@ BigInt::BigInt(string x)
 		break;
 	}
         
+        
+        temp.resize(data.length(), '0');
+    
+        for( int i = 0; i < data.length(); i++)
+            temp[i] = data[data.length() - i  - 1];
+    
+        data = temp;
+        
         for (int i = 0; i < data.length(); i++ )
         {
             if (data[data.length() - 1] == '0')
@@ -74,6 +83,13 @@ BigInt::BigInt(string x)
 		exit(1);
 	}
 	
+        temp.resize(data.length(), '0');
+    
+        for( int i = 0; i < data.length(); i++)
+            temp[i] = data[data.length() - i  - 1];
+    
+        data = temp;
+         
 }
 
 ostream& operator<<(ostream& out, const BigInt& right)
@@ -82,7 +98,7 @@ ostream& operator<<(ostream& out, const BigInt& right)
      BigInt temp;
      temp.data = right.data;
      
-     /*if(temp.data.length() > 1)
+     if(temp.data.length() > 1)
      {
         for (int i = 0; i < temp.data.length(); i++)
         {
@@ -91,7 +107,7 @@ ostream& operator<<(ostream& out, const BigInt& right)
          
             else break;
         }
-     }*/
+     }
     if (right.isNegative) out << '-';
 	
      for (int i = start; i < temp.data.length(); i++)
@@ -207,6 +223,9 @@ BigInt operator-(const BigInt& left, const BigInt& right)
                 answer.isNegative = false;
             }
         }
+         if ((answer.data.length() == 1) && (answer.data[0] == '0'))
+                answer.isNegative = false;
+        
 	return answer;
 }
 BigInt operator*(const BigInt& left, const BigInt& right)
@@ -259,7 +278,7 @@ BigInt operator*(const BigInt& left, const BigInt& right)
 BigInt operator/(const BigInt& left, const BigInt& right)
 {
     BigInt inner, outer, answer, temp;
-    int j;
+    int j = 0;
     bool zero = false;
     
     temp.data = "";
@@ -282,48 +301,33 @@ BigInt operator/(const BigInt& left, const BigInt& right)
         temp.data.push_back(inner.data[i]);
     
     temp.stringFlip();
-    cout << "Temp is " << temp.data << endl;
-   
+    cout << "temp is " << temp << endl;
     for (int i = outer.data.length(); i <= inner.data.length(); i++ )
     {    
         j = 0;
-        
-        while ((temp > outer))// || (temp == outer))
+        while ((temp > outer) || (temp == outer))
         {   
-            cout << "Hello";
             temp = temp - outer;
-            cout << "Temp is " << temp.data << endl;
+            cout << "Loop temp is " << temp << endl;
             j++;
-            
-            
-            /*for (int k = temp.data.length() - 1; k >= 0; k--)
+            temp.stringFlip();
+        
+            for (int i = 0; i < temp.data.length(); i++ )
             {
-                cout << "temp is " << temp.data <<endl;
-                if(temp.data[k] == '0')
-                {
-                    zero = true;
-                    cout << "the number is " << temp.data[k] << endl;
-                    cout << "Zero is " << zero << endl;
-                    cout << "temp is " << temp.data << endl;
-                }
-                else
-                {
-                    zero = false;
-                    break;
-                }
-                
+                if (temp.data[temp.data.length() - 1] == '0')
+                    temp.data.pop_back();      
             }
-            
-            if(zero)
-                break;*/
-        }
+        temp.stringFlip(); 
        
+        }
+      
         answer.data.push_back(j + '0');
         temp.data.push_back(inner.data[i]);
-        cout << "new temp is " << temp.data << endl;
+        cout << "new temp is " << temp << endl;
+    }
+   
     
     return answer;
-    }
 }
 
 bool operator<(const BigInt& left, const BigInt& right)
@@ -498,7 +502,8 @@ BigInt BigInt::subHelper(BigInt& left, BigInt& right)
         
         
         answer.stringFlip();
-	return answer;
+	
+        return answer;
 }
 
 bool BigInt::magnitude(BigInt& left, BigInt& right) const
@@ -529,7 +534,7 @@ bool BigInt::magnitude(BigInt& left, BigInt& right) const
         return false;
 }
 
-void BigInt:: stringFlip()
+void BigInt::stringFlip()
 {
     string temp;
     temp.resize(data.length(), '0');

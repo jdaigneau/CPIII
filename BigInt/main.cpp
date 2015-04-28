@@ -15,10 +15,10 @@ using namespace std;
 int main()
 { 
     
-    BigInt a(011);
-   // BigInt b(2);
-    
-    //cout << a << endl;
-    
+   BigInt a(150);
+   BigInt b(2);
+
+   cout << a/b << endl;
+   
 return 0;
 }
